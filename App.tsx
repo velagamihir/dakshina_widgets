@@ -14,6 +14,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { openAppSettings } from './src/modules/permissions';
 import { useTorch } from './src/modules/torch';
 import { ManualSetupCard } from './src/components/ManualSetupCard';
+import { TorchWidgetColors } from './src/constants/colors';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -207,20 +208,20 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   badgeActive: {
-    backgroundColor: '#FDD835',
+    backgroundColor: TorchWidgetColors.on.bg,
   },
   badgeInactive: {
-    backgroundColor: '#333333',
+    backgroundColor: TorchWidgetColors.off.stroke,
   },
   badgeText: {
     fontSize: 12,
     fontWeight: '700',
   },
   badgeTextActive: {
-    color: '#000000',
+    color: TorchWidgetColors.on.icon,
   },
   badgeTextInactive: {
-    color: '#FFFFFF',
+    color: TorchWidgetColors.off.icon,
   },
   widgetPreviewContainer: {
     alignItems: 'center',
@@ -240,14 +241,14 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   widgetButtonOff: {
-    backgroundColor: '#000000',
+    backgroundColor: TorchWidgetColors.off.bg,
     borderWidth: 1.5,
-    borderColor: '#333333',
+    borderColor: TorchWidgetColors.off.stroke,
   },
   widgetButtonOn: {
-    backgroundColor: '#FDD835',
+    backgroundColor: TorchWidgetColors.on.bg,
     borderWidth: 2,
-    borderColor: '#FFF176',
+    borderColor: TorchWidgetColors.on.stroke,
   },
   buttonPressed: {
     opacity: 0.8,
@@ -257,10 +258,10 @@ const styles = StyleSheet.create({
     fontSize: 30,
   },
   torchIconOff: {
-    color: '#FFFFFF',
+    color: TorchWidgetColors.off.icon,
   },
   torchIconOn: {
-    color: '#000000',
+    color: TorchWidgetColors.on.icon,
   },
   previewHint: {
     fontSize: 13,

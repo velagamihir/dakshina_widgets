@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval">
-    <solid android:color="#FDD835" />
+    <solid android:color="@color/torch_widget_bg_on" />
     <stroke
         android:width="2dp"
-        android:color="#FFF176" />
+        android:color="@color/torch_widget_stroke_on" />
 </shape>

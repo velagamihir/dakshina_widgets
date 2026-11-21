@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Torch Widget Active/ON State -->
+    <color name="torch_widget_bg_on">#00E676</color>
+    <color name="torch_widget_stroke_on">#69F0AE</color>
+    <color name="torch_widget_icon_on">#000000</color>
+
+    <!-- Torch Widget Inactive/OFF State -->
+    <color name="torch_widget_bg_off">#000000</color>
+    <color name="torch_widget_stroke_off">#333333</color>
+    <color name="torch_widget_icon_off">#FFFFFF</color>
+</resources>
