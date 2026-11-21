@@ -11,36 +11,13 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import {
-  checkCameraPermission,
-  openAppSettings,
-  requestCameraPermission,
-} from './src/modules/permissions';
+import { openAppSettings } from './src/modules/permissions';
 import { useTorch } from './src/modules/torch';
+import { ManualSetupCard } from './src/components/ManualSetupCard';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
-  const { isTorchOn, hasFlash, isPinningSupported, toggle, pinWidget } =
-    useTorch();
-
-  const handleToggle = async () => {
-    const hasPermission = await checkCameraPermission();
-    if (!hasPermission) {
-      const granted = await requestCameraPermission();
-      if (!granted) {
-        Alert.alert(
-          'Camera Permission Required',
-          'Flashlight operation requires camera access on some devices. Please grant permission in App Settings.',
-          [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Open Settings', onPress: openAppSettings },
-          ],
-        );
-        return;
-      }
-    }
-    await toggle();
-  };
+  const { hasFlash, pinWidget } = useTorch();
 
   const handlePinWidget = async () => {
     if (Platform.OS !== 'android') {
@@ -51,24 +28,6 @@ function App() {
       return;
     }
 
-    // 1. Ensure camera permission is granted
-    const hasPermission = await checkCameraPermission();
-    if (!hasPermission) {
-      const granted = await requestCameraPermission();
-      if (!granted) {
-        Alert.alert(
-          'Camera Permission Required',
-          'Dakshina Widgets needs camera permission so the widget can control the flashlight. Please grant permission in App Settings.',
-          [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Open Settings', onPress: openAppSettings },
-          ],
-        );
-        return;
-      }
-    }
-
-    // 2. Request widget pinning via Android system
     try {
       const success = await pinWidget();
       if (!success) {
@@ -134,23 +93,6 @@ function App() {
               >
                 Flashlight Widget
               </Text>
-              <View
-                style={[
-                  styles.badge,
-                  isTorchOn ? styles.badgeActive : styles.badgeInactive,
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.badgeText,
-                    isTorchOn
-                      ? styles.badgeTextActive
-                      : styles.badgeTextInactive,
-                  ]}
-                >
-                  {isTorchOn ? 'ON' : 'OFF'}
-                </Text>
-              </View>
             </View>
 
             <Text
@@ -177,42 +119,10 @@ function App() {
                 Add Widget to Home Screen
               </Text>
             </Pressable>
-
-            <View style={styles.instructionBox}>
-              <Text
-                style={[
-                  styles.instructionTitle,
-                  isDarkMode ? styles.darkText : styles.lightText,
-                ]}
-              >
-                📲 Manual Home Screen Setup:
-              </Text>
-              <Text
-                style={[
-                  styles.instructionText,
-                  isDarkMode ? styles.darkMutedText : styles.lightMutedText,
-                ]}
-              >
-                1. Long-press on an empty spot on your Android home screen.
-              </Text>
-              <Text
-                style={[
-                  styles.instructionText,
-                  isDarkMode ? styles.darkMutedText : styles.lightMutedText,
-                ]}
-              >
-                2. Tap Widgets → Select Dakshina Widgets.
-              </Text>
-              <Text
-                style={[
-                  styles.instructionText,
-                  isDarkMode ? styles.darkMutedText : styles.lightMutedText,
-                ]}
-              >
-                3. Place the Torch Toggle widget on your screen.
-              </Text>
-            </View>
           </View>
+
+          {/* Global Manual Home Screen Setup Guide */}
+          <ManualSetupCard isDarkMode={isDarkMode} />
         </ScrollView>
       </SafeAreaView>
     </SafeAreaProvider>
@@ -376,31 +286,10 @@ const styles = StyleSheet.create({
     opacity: 0.85,
     transform: [{ scale: 0.98 }],
   },
-  pinButtonIcon: {
-    fontSize: 16,
-    marginRight: 8,
-    color: '#FFFFFF',
-  },
   pinButtonText: {
     color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '600',
-  },
-  instructionBox: {
-    marginTop: 8,
-    paddingTop: 16,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#444444',
-  },
-  instructionTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 6,
-  },
-  instructionText: {
-    fontSize: 13,
-    lineHeight: 19,
-    marginBottom: 2,
   },
 });
 
