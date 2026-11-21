@@ -1,5 +1,8 @@
 package com.dakshina_widgets.torch
 
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
+import android.os.Build
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -40,6 +43,35 @@ class TorchModule(private val reactContext: ReactApplicationContext) :
     fun setTorch(enabled: Boolean, promise: Promise) {
         val success = TorchManager.setTorch(reactContext, enabled)
         promise.resolve(success)
+    }
+
+    @ReactMethod
+    fun isPinningSupported(promise: Promise) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val appWidgetManager = reactContext.getSystemService(AppWidgetManager::class.java)
+            promise.resolve(appWidgetManager?.isRequestPinAppWidgetSupported ?: false)
+        } else {
+            promise.resolve(false)
+        }
+    }
+
+    @ReactMethod
+    fun pinTorchWidget(promise: Promise) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val appWidgetManager = reactContext.getSystemService(AppWidgetManager::class.java)
+            if (appWidgetManager != null && appWidgetManager.isRequestPinAppWidgetSupported) {
+                try {
+                    val provider = ComponentName(reactContext, TorchWidgetProvider::class.java)
+                    val success = appWidgetManager.requestPinAppWidget(provider, null, null)
+                    promise.resolve(success)
+                    return
+                } catch (e: Exception) {
+                    promise.reject("PIN_FAILED", e.message, e)
+                    return
+                }
+            }
+        }
+        promise.resolve(false)
     }
 
     @ReactMethod

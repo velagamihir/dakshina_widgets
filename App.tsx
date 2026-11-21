@@ -1,5 +1,7 @@
 import React from 'react';
 import {
+  Alert,
+  Platform,
   Pressable,
   ScrollView,
   StatusBar,
@@ -12,11 +14,83 @@ import {
   SafeAreaProvider,
   SafeAreaView,
 } from 'react-native-safe-area-context';
+import {
+  checkCameraPermission,
+  openAppSettings,
+  requestCameraPermission,
+} from './src/modules/permissions';
 import { useTorch } from './src/modules/torch';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
-  const { isTorchOn, hasFlash, toggle } = useTorch();
+  const { isTorchOn, hasFlash, isPinningSupported, toggle, pinWidget } =
+    useTorch();
+
+  const handleToggle = async () => {
+    const hasPermission = await checkCameraPermission();
+    if (!hasPermission) {
+      const granted = await requestCameraPermission();
+      if (!granted) {
+        Alert.alert(
+          'Camera Permission Required',
+          'Flashlight operation requires camera access on some devices. Please grant permission in App Settings.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Open Settings', onPress: openAppSettings },
+          ],
+        );
+        return;
+      }
+    }
+    await toggle();
+  };
+
+  const handlePinWidget = async () => {
+    if (Platform.OS !== 'android') {
+      Alert.alert(
+        'Notice',
+        'Home screen widgets are currently only available on Android.',
+      );
+      return;
+    }
+
+    // 1. Ensure camera permission is granted
+    const hasPermission = await checkCameraPermission();
+    if (!hasPermission) {
+      const granted = await requestCameraPermission();
+      if (!granted) {
+        Alert.alert(
+          'Camera Permission Required',
+          'Dakshina Widgets needs camera permission so the widget can control the flashlight. Please grant permission in App Settings.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Open Settings', onPress: openAppSettings },
+          ],
+        );
+        return;
+      }
+    }
+
+    // 2. Request widget pinning via Android system
+    try {
+      const success = await pinWidget();
+      if (!success) {
+        Alert.alert(
+          'Could Not Add Widget Automatically',
+          'Your launcher did not accept the request to pin the widget. This commonly happens if home screen shortcut permissions are restricted (e.g. in MIUI/HyperOS settings) or if your launcher does not support direct pinning.\n\nYou can still add it manually by following the instructions below.',
+          [
+            { text: 'View Instructions', style: 'cancel' },
+            { text: 'Open App Settings', onPress: openAppSettings },
+          ],
+        );
+      }
+    } catch {
+      Alert.alert(
+        'Unable to Pin Widget',
+        'An error occurred while requesting widget placement. You can still add the widget manually from your home screen.',
+      );
+    }
+  };
 
   return (
     <SafeAreaProvider>
@@ -72,7 +146,9 @@ function App() {
                 <Text
                   style={[
                     styles.badgeText,
-                    isTorchOn ? styles.badgeTextActive : styles.badgeTextInactive,
+                    isTorchOn
+                      ? styles.badgeTextActive
+                      : styles.badgeTextInactive,
                   ]}
                 >
                   {isTorchOn ? 'ON' : 'OFF'}
@@ -87,14 +163,14 @@ function App() {
               ]}
             >
               {hasFlash
-                ? 'Tap the button below or use your Home Screen 1x1 widget for instant toggle.'
+                ? 'Tap the button below or pin the 1x1 widget directly to your Home Screen for instant toggle.'
                 : 'Flash hardware not detected on this device.'}
             </Text>
 
             {/* Widget Simulation & In-App Toggle */}
             <View style={styles.widgetPreviewContainer}>
               <Pressable
-                onPress={toggle}
+                onPress={handleToggle}
                 accessibilityRole="button"
                 accessibilityLabel="Toggle Flashlight"
                 style={({ pressed }) => [
@@ -124,6 +200,24 @@ function App() {
               </Text>
             </View>
 
+            {/* Pin to Home Screen Action Button */}
+            <Pressable
+              onPress={handlePinWidget}
+              accessibilityRole="button"
+              accessibilityLabel="Add Flashlight Widget to Home Screen"
+              style={({ pressed }) => [
+                styles.pinButton,
+                pressed && styles.pinButtonPressed,
+              ]}
+            >
+              <Text style={styles.pinButtonIcon}>➕</Text>
+              <Text style={styles.pinButtonText}>
+                {isPinningSupported
+                  ? 'Add Widget to Home Screen'
+                  : 'Add Widget to Home Screen'}
+              </Text>
+            </Pressable>
+
             <View style={styles.instructionBox}>
               <Text
                 style={[
@@ -131,7 +225,7 @@ function App() {
                   isDarkMode ? styles.darkText : styles.lightText,
                 ]}
               >
-                📲 How to add to Home Screen:
+                📲 Manual Home Screen Setup:
               </Text>
               <Text
                 style={[
@@ -302,8 +396,38 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginTop: 12,
   },
+  pinButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#007AFF',
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    marginTop: 12,
+    marginBottom: 16,
+    elevation: 2,
+    shadowColor: '#007AFF',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  pinButtonPressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.98 }],
+  },
+  pinButtonIcon: {
+    fontSize: 16,
+    marginRight: 8,
+    color: '#FFFFFF',
+  },
+  pinButtonText: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '600',
+  },
   instructionBox: {
-    marginTop: 16,
+    marginTop: 8,
     paddingTop: 16,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: '#444444',

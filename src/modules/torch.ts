@@ -8,6 +8,8 @@ export interface TorchInterface {
   hasFlash: () => Promise<boolean>;
   toggleTorch: () => Promise<boolean>;
   setTorch: (enabled: boolean) => Promise<boolean>;
+  isPinningSupported: () => Promise<boolean>;
+  pinWidget: () => Promise<boolean>;
 }
 
 export const Torch: TorchInterface = {
@@ -35,11 +37,24 @@ export const Torch: TorchInterface = {
     }
     return TorchModule.setTorch(enabled);
   },
+  isPinningSupported: async () => {
+    if (Platform.OS !== 'android' || !TorchModule) {
+      return false;
+    }
+    return TorchModule.isPinningSupported();
+  },
+  pinWidget: async () => {
+    if (Platform.OS !== 'android' || !TorchModule) {
+      return false;
+    }
+    return TorchModule.pinTorchWidget();
+  },
 };
 
 export function useTorch() {
   const [isTorchOn, setIsTorchOn] = useState(false);
   const [hasFlash, setHasFlash] = useState(true);
+  const [isPinningSupported, setIsPinningSupported] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -53,6 +68,12 @@ export function useTorch() {
     Torch.isTorchOn().then((active) => {
       if (isMounted) {
         setIsTorchOn(active);
+      }
+    });
+
+    Torch.isPinningSupported().then((supported) => {
+      if (isMounted) {
+        setIsPinningSupported(supported);
       }
     });
 
@@ -82,5 +103,9 @@ export function useTorch() {
     await Torch.toggleTorch();
   };
 
-  return { isTorchOn, hasFlash, toggle };
+  const pinWidget = async () => {
+    return Torch.pinWidget();
+  };
+
+  return { isTorchOn, hasFlash, isPinningSupported, toggle, pinWidget };
 }
