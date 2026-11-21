@@ -60,9 +60,9 @@ export function useTorch() {
       const emitter = new NativeEventEmitter(TorchModule);
       const subscription = emitter.addListener(
         'onTorchStateChanged',
-        (active: boolean) => {
+        (active: unknown) => {
           if (isMounted) {
-            setIsTorchOn(active);
+            setIsTorchOn(Boolean(active));
           }
         },
       );
