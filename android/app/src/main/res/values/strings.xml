@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">dakshina_widgets</string>
+    <string name="app_name">Dakshina Widgets</string>
+    <string name="widget_torch_name">Torch Toggle</string>
+    <string name="widget_torch_description">One-tap home screen toggle for your flashlight.</string>
 </resources>
