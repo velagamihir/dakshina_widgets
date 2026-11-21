@@ -10,10 +10,7 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
-import {
-  SafeAreaProvider,
-  SafeAreaView,
-} from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import {
   checkCameraPermission,
   openAppSettings,
@@ -135,7 +132,7 @@ function App() {
                   isDarkMode ? styles.darkText : styles.lightText,
                 ]}
               >
-                🔦 Flashlight Widget
+                Flashlight Widget
               </Text>
               <View
                 style={[
@@ -166,40 +163,6 @@ function App() {
                 ? 'Tap the button below or pin the 1x1 widget directly to your Home Screen for instant toggle.'
                 : 'Flash hardware not detected on this device.'}
             </Text>
-
-            {/* Widget Simulation & In-App Toggle */}
-            <View style={styles.widgetPreviewContainer}>
-              <Pressable
-                onPress={handleToggle}
-                accessibilityRole="button"
-                accessibilityLabel="Toggle Flashlight"
-                style={({ pressed }) => [
-                  styles.widgetButton,
-                  isTorchOn ? styles.widgetButtonOn : styles.widgetButtonOff,
-                  pressed && styles.buttonPressed,
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.torchIconText,
-                    isTorchOn ? styles.torchIconOn : styles.torchIconOff,
-                  ]}
-                >
-                  ⚡
-                </Text>
-              </Pressable>
-              <Text
-                style={[
-                  styles.previewHint,
-                  isDarkMode ? styles.darkMutedText : styles.lightMutedText,
-                ]}
-              >
-                {isTorchOn
-                  ? 'Torch is active (Yellow / Black Icon)'
-                  : 'Torch is off (Black / White Icon)'}
-              </Text>
-            </View>
-
             {/* Pin to Home Screen Action Button */}
             <Pressable
               onPress={handlePinWidget}
@@ -210,11 +173,8 @@ function App() {
                 pressed && styles.pinButtonPressed,
               ]}
             >
-              <Text style={styles.pinButtonIcon}>➕</Text>
               <Text style={styles.pinButtonText}>
-                {isPinningSupported
-                  ? 'Add Widget to Home Screen'
-                  : 'Add Widget to Home Screen'}
+                Add Widget to Home Screen
               </Text>
             </Pressable>
 
