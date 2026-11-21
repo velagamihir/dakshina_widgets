@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "build:apk": "./build-release-apk.sh",
+    "build:apk": "./src/scripts/build-release-apk.sh",
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
