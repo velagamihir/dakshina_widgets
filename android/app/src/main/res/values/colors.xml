@@ -9,4 +9,11 @@
     <color name="torch_widget_bg_off">#000000</color>
     <color name="torch_widget_stroke_off">#333333</color>
     <color name="torch_widget_icon_off">#FFFFFF</color>
+
+    <!-- Mood Battery Widget Colors -->
+    <color name="battery_widget_bg">#141416</color>
+    <color name="battery_widget_ring_track">#26262B</color>
+    <color name="battery_widget_happy">#00E676</color>
+    <color name="battery_widget_neutral">#FFD600</color>
+    <color name="battery_widget_sad">#FF5252</color>
 </resources>

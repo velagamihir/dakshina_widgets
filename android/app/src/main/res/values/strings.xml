@@ -2,4 +2,6 @@
     <string name="app_name">Dakshina Widgets</string>
     <string name="widget_torch_name">Torch Toggle</string>
     <string name="widget_torch_description">One-tap home screen toggle for your flashlight.</string>
+    <string name="widget_battery_name">Mood Battery</string>
+    <string name="widget_battery_description">Smiley face widget that changes with your battery percentage.</string>
 </resources>

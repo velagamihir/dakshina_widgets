@@ -6,11 +6,22 @@ import React from 'react';
 import ReactTestRenderer, { act } from 'react-test-renderer';
 import App from '../App';
 import { ManualSetupCard } from '../src/components/ManualSetupCard';
+import { MoodBatteryCard } from '../src/components/MoodBatteryCard';
 
 jest.mock('../src/modules/permissions', () => ({
   checkCameraPermission: jest.fn().mockResolvedValue(true),
   requestCameraPermission: jest.fn().mockResolvedValue(true),
   openAppSettings: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock('../src/modules/battery', () => ({
+  useBattery: () => ({
+    percentage: 85,
+    isCharging: false,
+    isPinningSupported: true,
+    pinWidget: jest.fn().mockResolvedValue(true),
+    getSmileyBase64: jest.fn().mockResolvedValue('data:image/png;base64,mockedImageData'),
+  }),
 }));
 
 jest.mock('../src/modules/torch', () => {
@@ -61,5 +72,20 @@ describe('ManualSetupCard', () => {
 
     const json = JSON.stringify(renderer?.toJSON());
     expect(json).toContain('Manual Home Screen Setup');
+  });
+});
+
+describe('MoodBatteryCard', () => {
+  test('renders correctly with battery details', async () => {
+    let renderer: ReactTestRenderer.ReactTestRenderer | undefined;
+    await act(async () => {
+      renderer = ReactTestRenderer.create(<MoodBatteryCard isDarkMode={true} />);
+    });
+
+    const json = JSON.stringify(renderer?.toJSON());
+    expect(json).toContain('Mood Battery Widget');
+    expect(json).toContain('Super Happy 😄');
+    expect(json).toContain('85%');
+    expect(json).toContain('Add Widget to Home Screen');
   });
 });

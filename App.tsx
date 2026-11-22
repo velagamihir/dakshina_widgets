@@ -14,6 +14,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { openAppSettings } from './src/modules/permissions';
 import { useTorch } from './src/modules/torch';
 import { ManualSetupCard } from './src/components/ManualSetupCard';
+import { MoodBatteryCard } from './src/components/MoodBatteryCard';
 import { TorchWidgetColors } from './src/constants/colors';
 
 function App() {
@@ -121,6 +122,9 @@ function App() {
               </Text>
             </Pressable>
           </View>
+
+          {/* Mood Battery Widget Card */}
+          <MoodBatteryCard isDarkMode={isDarkMode} />
 
           {/* Global Manual Home Screen Setup Guide */}
           <ManualSetupCard isDarkMode={isDarkMode} />
